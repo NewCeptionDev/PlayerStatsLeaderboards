@@ -2,16 +2,14 @@ package dev.newception.playerStatsLeaderboards;
 
 import dev.newception.playerStatsLeaderboards.commands.AvailableLeaderboardsCommand;
 import dev.newception.playerStatsLeaderboards.commands.ShowLeaderboardCommand;
+import dev.newception.playerStatsLeaderboards.util.PlayerInformationCache;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +20,8 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("player-stats-leaderboards");
 
 	public static Set<UUID> REGISTERED_PLAYERS = new HashSet<>();
+
+	public static Map<UUID, PlayerInformationCache> PLAYER_INFORMATION_CACHE = new HashMap<>();
 
 	@Override
 	public void onInitialize() {

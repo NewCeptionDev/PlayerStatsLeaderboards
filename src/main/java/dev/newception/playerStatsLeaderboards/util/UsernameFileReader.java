@@ -11,15 +11,17 @@ import java.util.UUID;
 
 public class UsernameFileReader {
 
-    public static String readDisplayNameOfPlayer(UUID player) {
+    public static String readDisplayNameOfPlayer(UUID playerUUID) {
         File usercacheFile = new File("./usercache.json");
 
         try {
             String userCacheContent = Files.readString(usercacheFile.toPath());
             JsonArray json = JsonParser.parseString(userCacheContent).getAsJsonArray();
             for(JsonElement elem : json.asList()) {
-                if(elem.getAsJsonObject().get("uuid").getAsString().equals(player.toString())) {
-                    return elem.getAsJsonObject().get("name").getAsString();
+                if(elem.getAsJsonObject().get("uuid").getAsString().equals(playerUUID.toString())) {
+                    String username = elem.getAsJsonObject().get("name").getAsString();
+
+                    return username;
                 }
             }
 
