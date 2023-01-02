@@ -1,15 +1,19 @@
 package dev.newception.playerStatsLeaderboards;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.newception.playerStatsLeaderboards.commands.AvailableLeaderboardsCommand;
 import dev.newception.playerStatsLeaderboards.commands.ShowLeaderboardCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.stat.Stats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static net.minecraft.server.command.CommandManager.literal;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PlayerStatsLeaderboardsMod implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -17,15 +21,35 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("player-stats-leaderboards");
 
+	public static Set<UUID> REGISTERED_PLAYERS = new HashSet<>();
+
 	@Override
 	public void onInitialize() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		REGISTERED_PLAYERS = getUUIDsFromAllPlayersEveryJoined();
+
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> AvailableLeaderboardsCommand.register(dispatcher));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ShowLeaderboardCommand.register(dispatcher));
 
 		LOGGER.info("Hello Fabric world!");
+	}
+
+	public static Set<UUID> getUUIDsFromAllPlayersEveryJoined() {
+		String path = "./world/stats/";
+
+		if(!new File(path).exists()) {
+			return new HashSet<>();
+		}
+
+		return Stream.of(Objects.requireNonNull(new File(path).listFiles()))
+				.filter(file -> !file.isDirectory())
+				.map(File::getName)
+				.filter(s -> !s.isEmpty())
+				.map(s -> s.split("\\.")[0])
+				.map(UUID::fromString)
+				.collect(Collectors.toSet());
 	}
 }

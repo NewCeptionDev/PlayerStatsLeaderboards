@@ -2,14 +2,6 @@ package dev.newception.playerStatsLeaderboards.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import eu.pb4.sgui.api.gui.BookGui;
-import eu.pb4.sgui.api.gui.SimpleGui;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
