@@ -1,4 +1,4 @@
-package dev.newception.playerStatsLeaderboards.util;
+package dev.newception.playerStatsLeaderboards.io;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -6,8 +6,6 @@ import dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -36,10 +34,13 @@ public class UsernameAPI {
             if(responseJson.get("code").getAsString().equals("player.found")) {
                 return responseJson.getAsJsonObject("data").getAsJsonObject("player").get("username").getAsString();
             } else {
-                throw new IllegalArgumentException("No player was found for the given UUID");
+                PlayerStatsLeaderboardsMod.LOGGER.error("API Call returned no player for the given UUID " + playerUUID);
+                return null;
             }
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            PlayerStatsLeaderboardsMod.LOGGER.error("API Call finished with an error for UUID " + playerUUID);
+            PlayerStatsLeaderboardsMod.LOGGER.error("Error Message is: " + e.getMessage());
+            return null;
         }
     }
 }

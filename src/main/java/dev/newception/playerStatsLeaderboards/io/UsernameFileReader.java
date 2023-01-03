@@ -1,8 +1,9 @@
-package dev.newception.playerStatsLeaderboards.util;
+package dev.newception.playerStatsLeaderboards.io;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +27,12 @@ public class UsernameFileReader {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            PlayerStatsLeaderboardsMod.LOGGER.error("There was an IO Error while trying to read the usercache");
+            PlayerStatsLeaderboardsMod.LOGGER.error("Error Message is: " + e.getMessage());
+            return null;
         }
 
-        throw new RuntimeException("Player was not found");
+        return null;
     }
 
 }

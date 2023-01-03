@@ -1,4 +1,4 @@
-package dev.newception.playerStatsLeaderboards.util;
+package dev.newception.playerStatsLeaderboards.io;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class StatsFileReader {
 
-    public static int readStatForPlayer(UUID player, String stat, Path statsPath) {
+    public static Integer readStatForPlayer(UUID player, String stat, Path statsPath) {
         try {
             String statsContent = Files.readString(statsPath.resolve(player.toString() + ".json"));
             JsonObject jsonRoot = JsonParser.parseString(statsContent).getAsJsonObject();
@@ -26,7 +26,9 @@ public class StatsFileReader {
             }
             return 0;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            PlayerStatsLeaderboardsMod.LOGGER.error("There was an IO Error while trying to read the stats for UUID " + player);
+            PlayerStatsLeaderboardsMod.LOGGER.error("Error Message is: " + e.getMessage());
+            return null;
         }
     }
 

@@ -1,5 +1,6 @@
-package dev.newception.playerStatsLeaderboards.util;
+package dev.newception.playerStatsLeaderboards.service;
 
+import dev.newception.playerStatsLeaderboards.util.PlayerStatValue;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -43,9 +44,9 @@ public class LeaderboardBookBuilder {
 
                 pageContentBuilder.append(position);
                 pageContentBuilder.append(". ");
-                pageContentBuilder.append(playerStatValue.getPlayerName());
+                pageContentBuilder.append(playerStatValue.playerName());
                 pageContentBuilder.append(" (");
-                pageContentBuilder.append(stat.format(playerStatValue.getStatValue()));
+                pageContentBuilder.append(stat.format(playerStatValue.statValue()));
                 pageContentBuilder.append(")");
                 pageContentBuilder.append("\n");
             }

@@ -1,8 +1,9 @@
 package dev.newception.playerStatsLeaderboards.util;
 
-import net.minecraft.stat.Stat;
+import dev.newception.playerStatsLeaderboards.io.StatsFileReader;
+import dev.newception.playerStatsLeaderboards.io.UsernameAPI;
+import dev.newception.playerStatsLeaderboards.io.UsernameFileReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.WorldSavePath;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 public class PlayerInformationCache {
 
-    private UUID playerUUID;
+    private final UUID playerUUID;
 
     private String username;
 
@@ -22,10 +23,6 @@ public class PlayerInformationCache {
         this.statCache = new HashMap<>();
     }
 
-    public UUID getPlayerUUID() {
-        return playerUUID;
-    }
-
     public String getUsername() {
         if(username == null) {
             findUsername();
@@ -34,7 +31,7 @@ public class PlayerInformationCache {
         return username;
     }
 
-    public int getStat(Identifier requestedStatIdentifier, Path statsSavePath) {
+    public Integer getStat(Identifier requestedStatIdentifier, Path statsSavePath) {
         if(!statCache.containsKey(requestedStatIdentifier)) {
             statCache.put(requestedStatIdentifier, StatsFileReader.readStatForPlayer(playerUUID, requestedStatIdentifier.getPath(), statsSavePath));
         }
@@ -43,10 +40,20 @@ public class PlayerInformationCache {
     }
 
     public void findUsername() {
-        try {
-            username = UsernameFileReader.readDisplayNameOfPlayer(playerUUID);
-        } catch (RuntimeException ignored) {
+        username = UsernameFileReader.readDisplayNameOfPlayer(playerUUID);
+
+        if(username == null) {
             username = UsernameAPI.getUsernameForUUID(playerUUID);
+        }
+    }
+
+    public void resetStatsCache() {
+        this.statCache = new HashMap<>();
+    }
+
+    public void updateUsernameIfNecessary(String username) {
+        if(!this.username.equals(username)) {
+            this.username = username;
         }
     }
 }

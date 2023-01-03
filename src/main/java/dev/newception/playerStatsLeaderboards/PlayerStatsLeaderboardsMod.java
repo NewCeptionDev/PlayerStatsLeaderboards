@@ -2,9 +2,11 @@ package dev.newception.playerStatsLeaderboards;
 
 import dev.newception.playerStatsLeaderboards.commands.AvailableLeaderboardsCommand;
 import dev.newception.playerStatsLeaderboards.commands.ShowLeaderboardCommand;
+import dev.newception.playerStatsLeaderboards.events.PlayerJoinEventListener;
 import dev.newception.playerStatsLeaderboards.util.PlayerInformationCache;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,8 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> AvailableLeaderboardsCommand.register(dispatcher));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ShowLeaderboardCommand.register(dispatcher));
+
+		ServerPlayConnectionEvents.JOIN.register(PlayerJoinEventListener::handlePlayerJoinEvent);
 
 		LOGGER.info("Hello Fabric world!");
 	}
