@@ -7,8 +7,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -60,10 +64,6 @@ public class Config {
         this.customTranslation = customTranslation;
     }
 
-    public static Config fromFileConfig(FileConfig fileConfig) {
-        return new Config(fileConfig.getDefaultDisplayedItem(), fileConfig.getDisplayedItem(), fileConfig.getCustomTranslation());
-    }
-
     public static Config readConfig() {
         File modConfigDirectory = new File(CONFIG_PATH);
 
@@ -82,9 +82,6 @@ public class Config {
         try {
             String content = Files.readString(configFile.toPath());
             JsonElement jsonContent = JsonParser.parseString(content);
-
-//            Gson gson = new GsonBuilder().create();
-//            return Config.fromFileConfig(gson.fromJson(jsonContent, FileConfig.class));
 
             JsonObject root = jsonContent.getAsJsonObject();
             String defaultDisplayedItem = root.get("defaultDisplayedItem").getAsString();
@@ -106,14 +103,10 @@ public class Config {
             }
 
             return new Config(defaultDisplayedItem, displayedItem, customTranslation);
-        } catch (IOException | IllegalStateException e) {
+        } catch (Exception e) {
             PlayerStatsLeaderboardsMod.LOGGER.error("Error while parsing Config File: " + e.getMessage());
             return null;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return null;
     }
 
     public Identifier getDefaultDisplayedItem() {
@@ -153,6 +146,42 @@ public class Config {
             return Registries.CUSTOM_STAT.stream().filter(identifier -> identifier.getPath().equals(path) && (namespace == null || identifier.getNamespace().equals(namespace))).findFirst();
         } else {
             return Registries.ITEM.stream().map(Registries.ITEM::getId).filter(identifier -> identifier.getPath().equals(path) && (namespace == null || identifier.getNamespace().equals(namespace))).findFirst();
+        }
+    }
+
+    public static void persistConfig(Config config) {
+        try {
+            Path dirPath = Paths.get(CONFIG_PATH);
+            if (!Files.exists(dirPath)) {
+                Files.createDirectory(dirPath);
+                PlayerStatsLeaderboardsMod.LOGGER.info("Created PlayerModsLeaderboards Mod folder");
+            }
+
+            Writer writer = new FileWriter(CONFIG_PATH + "/" + "config.json");
+
+            PlayerStatsLeaderboardsMod.LOGGER.info(config.getDefaultDisplayedItem().toString());
+
+            JsonObject toSerialize = new JsonObject();
+            toSerialize.addProperty("defaultDisplayedItem", config.getDefaultDisplayedItem().getPath());
+
+            JsonObject displayItemSerialize = new JsonObject();
+            config.displayedItem.keySet().forEach(key -> {
+                displayItemSerialize.addProperty(key.getPath(), config.displayedItem.get(key).getPath());
+            });
+            toSerialize.add("displayedItem", displayItemSerialize);
+
+            JsonObject customTranslationSerialize = new JsonObject();
+            config.customTranslation.keySet().forEach(key -> {
+                customTranslationSerialize.addProperty(key.getPath(), config.customTranslation.get(key));
+            });
+            toSerialize.add("customTranslation", customTranslationSerialize);
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(toSerialize, writer);
+            writer.close();
+            PlayerStatsLeaderboardsMod.LOGGER.info("Persisted mod config");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
