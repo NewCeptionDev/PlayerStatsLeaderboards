@@ -2,11 +2,9 @@ package dev.newception.playerStatsLeaderboards.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod;
 import dev.newception.playerStatsLeaderboards.service.LeaderboardBookBuilder;
 import dev.newception.playerStatsLeaderboards.service.LeaderboardDataBuilder;
 import dev.newception.playerStatsLeaderboards.service.StatService;
-import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.gui.BookGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SimpleGuiBuilder;
@@ -14,13 +12,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stat;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import static dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod.MOD_CONFIG;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -79,7 +77,7 @@ public class AvailableLeaderboardsCommand {
         gui.setLockPlayerInventory(true);
 
         for(int i = startItemIndex; i < Registries.CUSTOM_STAT.size() && (i - startItemIndex) < 54; i++) {
-            ItemStack itemToDisplay = Items.GRASS_BLOCK.getDefaultStack();
+            ItemStack itemToDisplay = MOD_CONFIG.getDisplayedItem().containsKey(Registries.CUSTOM_STAT.get(i)) ? Registries.ITEM.get(MOD_CONFIG.getDisplayedItem().get(Registries.CUSTOM_STAT.get(i))).getDefaultStack() : Registries.ITEM.get(MOD_CONFIG.getDefaultDisplayedItem()).getDefaultStack();
             itemToDisplay.setCustomName(Text.translatable(Registries.CUSTOM_STAT.get(i).toTranslationKey("stat")));
             int currentIndex = i;
             gui.setSlot(currentIndex % 54, itemToDisplay, (index, type, action) -> {
