@@ -66,7 +66,7 @@ public class AvailableLeaderboardsCommand {
         int pageCount = Math.floorDiv(Registries.CUSTOM_STAT.size(), 54) + 1;
         int startItemIndex = (page > 0 ? page - 1 : 0) * 54;
 
-        if(page >= pageCount) {
+        if(page > pageCount) {
             source.sendMessage(Text.literal("There are not that many elements. Please use a smaller page index.").formatted(Formatting.RED));
         }
 
@@ -80,7 +80,7 @@ public class AvailableLeaderboardsCommand {
             ItemStack itemToDisplay = MOD_CONFIG.getDisplayedItem().containsKey(Registries.CUSTOM_STAT.get(i)) ? Registries.ITEM.get(MOD_CONFIG.getDisplayedItem().get(Registries.CUSTOM_STAT.get(i))).getDefaultStack() : Registries.ITEM.get(MOD_CONFIG.getDefaultDisplayedItem()).getDefaultStack();
             itemToDisplay.setCustomName(Text.translatable(Registries.CUSTOM_STAT.get(i).toTranslationKey("stat")));
             int currentIndex = i;
-            gui.setSlot(currentIndex % 54, itemToDisplay, (index, type, action) -> {
+            gui.setSlot(currentIndex % 54, itemToDisplay, (index, type, action, gui1) -> {
                 if(index == currentIndex % 54 && type.isLeft) {
                     Stat<Identifier> correspondingStat = StatService.findStatForIdentifier(Registries.CUSTOM_STAT.get(currentIndex));
 

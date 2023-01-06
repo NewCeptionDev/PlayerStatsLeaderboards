@@ -5,6 +5,8 @@ import dev.newception.playerStatsLeaderboards.commands.ShowLeaderboardCommand;
 import dev.newception.playerStatsLeaderboards.config.Config;
 import dev.newception.playerStatsLeaderboards.config.DefaultConfig;
 import dev.newception.playerStatsLeaderboards.events.PlayerJoinEventListener;
+import dev.newception.playerStatsLeaderboards.io.ConfigFileIO;
+import dev.newception.playerStatsLeaderboards.io.StatsFileReader;
 import dev.newception.playerStatsLeaderboards.util.PlayerInformationCache;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -38,39 +40,23 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		Config readConfig = Config.readConfig();
+		Config readConfig = ConfigFileIO.readConfig();
 
 		if(readConfig != null) {
 			MOD_CONFIG = readConfig;
 			LOGGER.info("Successfully read existing config file");
 		} else {
 			MOD_CONFIG = new DefaultConfig();
-			DefaultConfig.persistConfig(MOD_CONFIG);
+			ConfigFileIO.persistConfig(MOD_CONFIG);
 		}
 
-		REGISTERED_PLAYERS = getUUIDsFromAllPlayersEveryJoined();
+		REGISTERED_PLAYERS = StatsFileReader.getUUIDsFromAllPlayersEveryJoined();
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> AvailableLeaderboardsCommand.register(dispatcher));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ShowLeaderboardCommand.register(dispatcher));
 
 		ServerPlayConnectionEvents.JOIN.register(PlayerJoinEventListener::handlePlayerJoinEvent);
 
-		LOGGER.info("Hello Fabric world!");
-	}
-
-	public static Set<UUID> getUUIDsFromAllPlayersEveryJoined() {
-		String path = "./world/stats/";
-
-		if(!new File(path).exists()) {
-			return new HashSet<>();
-		}
-
-		return Stream.of(Objects.requireNonNull(new File(path).listFiles()))
-				.filter(file -> !file.isDirectory())
-				.map(File::getName)
-				.filter(s -> !s.isEmpty())
-				.map(s -> s.split("\\.")[0])
-				.map(UUID::fromString)
-				.collect(Collectors.toSet());
+		LOGGER.info("Successfully started PlayerStatsLeaderboards Mod!");
 	}
 }

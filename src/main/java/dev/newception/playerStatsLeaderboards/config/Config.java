@@ -19,8 +19,6 @@ import java.util.Optional;
 
 public class Config {
 
-    static final String CONFIG_PATH = "./mods/PlayerStatsLeaderboards";
-
     Identifier defaultDisplayedItem = Registries.ITEM.getId(Items.GRASS_BLOCK);
     
     final Map<Identifier, Identifier> displayedItem;
@@ -64,51 +62,6 @@ public class Config {
         this.customTranslation = customTranslation;
     }
 
-    public static Config readConfig() {
-        File modConfigDirectory = new File(CONFIG_PATH);
-
-        if(!modConfigDirectory.exists() || !modConfigDirectory.isDirectory()) {
-            PlayerStatsLeaderboardsMod.LOGGER.info("PlayerStatsLeaderboards mod folder does not exist yet");
-            return null;
-        }
-
-        File configFile = new File(CONFIG_PATH + "/" + "config.json");
-
-        if(!configFile.exists() || !configFile.isFile()) {
-            PlayerStatsLeaderboardsMod.LOGGER.info("PlayerStatsLeaderboards config file does not exist yet");
-            return null;
-        }
-
-        try {
-            String content = Files.readString(configFile.toPath());
-            JsonElement jsonContent = JsonParser.parseString(content);
-
-            JsonObject root = jsonContent.getAsJsonObject();
-            String defaultDisplayedItem = root.get("defaultDisplayedItem").getAsString();
-
-            JsonObject displayedItemObject = root.getAsJsonObject("displayedItem");
-            Map<String, String> displayedItem = new HashMap<>();
-
-            for(String key : displayedItemObject.keySet()) {
-                String value = displayedItemObject.get(key).getAsString();
-                displayedItem.put(key, value);
-            }
-
-            JsonObject customTranslationObject = root.getAsJsonObject("customTranslation");
-            Map<String, String> customTranslation = new HashMap<>();
-
-            for(String key : customTranslationObject.keySet()) {
-                String value = customTranslationObject.get(key).getAsString();
-                customTranslation.put(key, value);
-            }
-
-            return new Config(defaultDisplayedItem, displayedItem, customTranslation);
-        } catch (Exception e) {
-            PlayerStatsLeaderboardsMod.LOGGER.error("Error while parsing Config File: " + e.getMessage());
-            return null;
-        }
-    }
-
     public Identifier getDefaultDisplayedItem() {
         return defaultDisplayedItem;
     }
@@ -146,42 +99,6 @@ public class Config {
             return Registries.CUSTOM_STAT.stream().filter(identifier -> identifier.getPath().equals(path) && (namespace == null || identifier.getNamespace().equals(namespace))).findFirst();
         } else {
             return Registries.ITEM.stream().map(Registries.ITEM::getId).filter(identifier -> identifier.getPath().equals(path) && (namespace == null || identifier.getNamespace().equals(namespace))).findFirst();
-        }
-    }
-
-    public static void persistConfig(Config config) {
-        try {
-            Path dirPath = Paths.get(CONFIG_PATH);
-            if (!Files.exists(dirPath)) {
-                Files.createDirectory(dirPath);
-                PlayerStatsLeaderboardsMod.LOGGER.info("Created PlayerModsLeaderboards Mod folder");
-            }
-
-            Writer writer = new FileWriter(CONFIG_PATH + "/" + "config.json");
-
-            PlayerStatsLeaderboardsMod.LOGGER.info(config.getDefaultDisplayedItem().toString());
-
-            JsonObject toSerialize = new JsonObject();
-            toSerialize.addProperty("defaultDisplayedItem", config.getDefaultDisplayedItem().getPath());
-
-            JsonObject displayItemSerialize = new JsonObject();
-            config.displayedItem.keySet().forEach(key -> {
-                displayItemSerialize.addProperty(key.getPath(), config.displayedItem.get(key).getPath());
-            });
-            toSerialize.add("displayedItem", displayItemSerialize);
-
-            JsonObject customTranslationSerialize = new JsonObject();
-            config.customTranslation.keySet().forEach(key -> {
-                customTranslationSerialize.addProperty(key.getPath(), config.customTranslation.get(key));
-            });
-            toSerialize.add("customTranslation", customTranslationSerialize);
-
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(toSerialize, writer);
-            writer.close();
-            PlayerStatsLeaderboardsMod.LOGGER.info("Persisted mod config");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

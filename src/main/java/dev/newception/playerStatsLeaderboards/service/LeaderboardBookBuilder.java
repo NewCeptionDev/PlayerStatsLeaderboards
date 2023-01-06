@@ -21,7 +21,7 @@ public class LeaderboardBookBuilder {
     public static ItemStack buildWrittenBook(List<PlayerStatValue> playerStatValues, Stat<Identifier> stat) {
         ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
         NbtCompound tags = new NbtCompound();
-        tags.putString("title", stat.getValue().getPath() + " Leaderboard");
+        tags.putString("title", "Leaderboard");
         tags.putString("author", "PlayerStatsLeaderboards");
 
         NbtList bookContent = new NbtList();
