@@ -1,5 +1,6 @@
 package dev.newception.playerStatsLeaderboards.service;
 
+import dev.newception.playerStatsLeaderboards.config.StatisticTranslation;
 import dev.newception.playerStatsLeaderboards.util.PlayerStatValue;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -10,6 +11,8 @@ import net.minecraft.stat.Stat;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
+
+import static dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod.MOD_CONFIG;
 
 public class LeaderboardBookBuilder {
 
@@ -31,7 +34,7 @@ public class LeaderboardBookBuilder {
             StringBuilder pageContentBuilder = new StringBuilder();
             int playersToList = LEADERBOARD_LINES_PER_PAGE;
             if (i == 0) {
-                pageContentBuilder.append("Leaderboard for Statistic ").append(stat.getValue().getPath());
+                pageContentBuilder.append("Leaderboard for ").append(getTranslationForStatistic(stat));
                 pageContentBuilder.append("\n");
                 pageContentBuilder.append("\n");
 
@@ -75,5 +78,17 @@ public class LeaderboardBookBuilder {
         }
 
         return LEADERBOARD_LINES_FIRST_PAGE + (page - 1) * LEADERBOARD_LINES_PER_PAGE + positionOnPage + 1;
+    }
+
+    private static String getTranslationForStatistic(Stat<Identifier> statistic) {
+        if(MOD_CONFIG.getCustomTranslation().containsKey(statistic.getValue().toTranslationKey("stat"))) {
+            return MOD_CONFIG.getCustomTranslation().get(statistic.getValue().toTranslationKey("stat"));
+        }
+
+        if(StatisticTranslation.getTRANSLATION().containsKey(statistic.getValue().toTranslationKey("stat"))) {
+            return StatisticTranslation.getTRANSLATION().get(statistic.getValue().toTranslationKey("stat"));
+        }
+
+        return statistic.getValue().toShortTranslationKey();
     }
 }

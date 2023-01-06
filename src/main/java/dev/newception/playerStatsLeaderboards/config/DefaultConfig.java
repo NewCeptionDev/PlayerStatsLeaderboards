@@ -100,7 +100,7 @@ public class DefaultConfig extends Config {
         return displayedItem;
     }
 
-    private static Map<Identifier, String> getDefaultConfigCustomTranslation() {
+    private static Map<String, String> getDefaultConfigCustomTranslation() {
         return new HashMap<>();
     }
 }

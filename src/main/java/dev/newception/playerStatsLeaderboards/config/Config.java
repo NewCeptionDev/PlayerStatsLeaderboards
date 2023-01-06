@@ -23,7 +23,7 @@ public class Config {
     
     final Map<Identifier, Identifier> displayedItem;
     
-    final Map<Identifier, String> customTranslation;
+    final Map<String, String> customTranslation;
 
     public Config(String defaultDisplayedItem, Map<String, String> displayedItem, Map<String, String> customTranslation) {
         Optional<Identifier> defaultDisplayedItemIdentifier = getIdentifierForString(defaultDisplayedItem, false);
@@ -43,20 +43,16 @@ public class Config {
         });
         this.displayedItem = displayedItemMap;
 
-        Map<Identifier, String> customTranslationMap = new HashMap<>();
-        customTranslation.keySet().stream().map(key -> getIdentifierForString(key, true)).filter(Optional::isPresent).map(Optional::get).forEach(keyIdentifier -> {
-            String correspondingTranslation = customTranslation.get(keyIdentifier.getPath());
+        Map<String, String> customTranslationMap = new HashMap<>();
+        customTranslation.keySet().forEach(key -> {
+            String correspondingTranslation = customTranslation.get(key);
 
-            if(correspondingTranslation == null) {
-                correspondingTranslation = customTranslation.get(keyIdentifier.getNamespace() + ":" + keyIdentifier.getPath());
-            }
-
-            customTranslationMap.put(keyIdentifier, correspondingTranslation);
+            customTranslationMap.put(key, correspondingTranslation);
         });
         this.customTranslation = customTranslationMap;
     }
 
-    protected Config(Identifier defaultDisplayedItem, Map<Identifier, Identifier> displayedItem, Map<Identifier, String> customTranslation) {
+    protected Config(Identifier defaultDisplayedItem, Map<Identifier, Identifier> displayedItem, Map<String, String> customTranslation) {
         this.defaultDisplayedItem = defaultDisplayedItem;
         this.displayedItem = displayedItem;
         this.customTranslation = customTranslation;
@@ -70,7 +66,7 @@ public class Config {
         return displayedItem;
     }
 
-    public Map<Identifier, String> getCustomTranslation() {
+    public Map<String, String> getCustomTranslation() {
         return customTranslation;
     }
 

@@ -30,7 +30,7 @@ public class ConfigFileIO {
             Writer writer = new FileWriter(CONFIG_PATH + "/" + "config.json");
 
             JsonObject toSerialize = new JsonObject();
-            toSerialize.addProperty("defaultDisplayedItem", config.getDefaultDisplayedItem().getPath());
+            toSerialize.addProperty("defaultDisplayedItem", config.getDefaultDisplayedItem().getNamespace() + ":" + config.getDefaultDisplayedItem().getPath());
 
             JsonObject displayItemSerialize = new JsonObject();
             config.getDisplayedItem().keySet().forEach(key -> {
@@ -41,7 +41,7 @@ public class ConfigFileIO {
 
             JsonObject customTranslationSerialize = new JsonObject();
             config.getCustomTranslation().keySet().forEach(key -> {
-                customTranslationSerialize.addProperty(key.getNamespace() + ":" + key.getPath(), config.getCustomTranslation().get(key));
+                customTranslationSerialize.addProperty(key, config.getCustomTranslation().get(key));
             });
             toSerialize.add("customTranslation", customTranslationSerialize);
 
