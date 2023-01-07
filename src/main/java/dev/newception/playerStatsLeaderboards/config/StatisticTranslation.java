@@ -6,9 +6,11 @@ import java.util.Map;
 public class StatisticTranslation {
 
     private static Map<String, String> TRANSLATION = populateTranslationMap();
+
     private static Map<String, String> populateTranslationMap() {
         Map<String, String> translation = new HashMap<>();
 
+        // General Stats Translations
         translation.put("stat.minecraft.animals_bred", "Animals Bred");
         translation.put("stat.minecraft.aviate_one_cm", "Distance by Elytra");
         translation.put("stat.minecraft.bell_ring", "Bells Rung");
@@ -87,6 +89,13 @@ public class StatisticTranslation {
         translation.put("stat.minecraft.walk_on_water_one_cm", "Distance Walked on Water");
         translation.put("stat.minecraft.walk_one_cm", "Distance Walked");
         translation.put("stat.minecraft.walk_under_water_one_cm", "Distance Walked under Water");
+
+        translation.put("stat_type.minecraft.broken", "Times Broken");
+        translation.put("stat_type.minecraft.crafted", "Times Crafted");
+        translation.put("stat_type.minecraft.dropped", "Times Dropped");
+        translation.put("stat_type.minecraft.mined", "Times Mined");
+        translation.put("stat_type.minecraft.picked_up", "Times Picked Up");
+        translation.put("stat_type.minecraft.used", "Times Used");
 
         return translation;
     }

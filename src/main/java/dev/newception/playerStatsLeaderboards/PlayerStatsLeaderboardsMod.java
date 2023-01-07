@@ -1,7 +1,7 @@
 package dev.newception.playerStatsLeaderboards;
 
-import dev.newception.playerStatsLeaderboards.commands.AvailableLeaderboardsCommand;
-import dev.newception.playerStatsLeaderboards.commands.ShowLeaderboardCommand;
+import dev.newception.playerStatsLeaderboards.commands.LeaderboardSelectionCommand;
+import dev.newception.playerStatsLeaderboards.commands.ShowSpecificLeaderboardCommand;
 import dev.newception.playerStatsLeaderboards.config.Config;
 import dev.newception.playerStatsLeaderboards.config.DefaultConfig;
 import dev.newception.playerStatsLeaderboards.events.PlayerJoinEventListener;
@@ -14,10 +14,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PlayerStatsLeaderboardsMod implements ModInitializer {
 
@@ -52,8 +49,8 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 
 		REGISTERED_PLAYERS = StatsFileReader.getUUIDsFromAllPlayersEveryJoined();
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> AvailableLeaderboardsCommand.register(dispatcher));
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ShowLeaderboardCommand.register(dispatcher));
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> LeaderboardSelectionCommand.register(dispatcher));
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ShowSpecificLeaderboardCommand.register(dispatcher));
 
 		ServerPlayConnectionEvents.JOIN.register(PlayerJoinEventListener::handlePlayerJoinEvent);
 

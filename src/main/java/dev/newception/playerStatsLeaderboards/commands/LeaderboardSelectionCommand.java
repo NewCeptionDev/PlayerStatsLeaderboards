@@ -9,7 +9,6 @@ import eu.pb4.sgui.api.gui.BookGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SimpleGuiBuilder;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -22,47 +21,20 @@ import static dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod.
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class AvailableLeaderboardsCommand {
-    private static final int SHOWN_ITEMS_PER_PAGE = 10;
+public class LeaderboardSelectionCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("leaderboards")
-                .then(literal("list")
-                .executes(context -> getAvailableLeaderboards(context.getSource(), 0))));
-
-        dispatcher.register(literal("leaderboards")
-                .then(literal("list")
-                        .then(argument("page", IntegerArgumentType.integer(1))
-                        .executes(context -> getAvailableLeaderboards(context.getSource(), IntegerArgumentType.getInteger(context,"page"))))));
-
-        dispatcher.register(literal("leaderboards")
                 .then(literal("show")
-                        .executes(context -> getAvailableLeaderboardsGUI(context.getSource(), 0))));
+                        .executes(context -> getAvailableGeneralStatisticLeaderboardsGUI(context.getSource(), 0))));
 
         dispatcher.register(literal("leaderboards")
                 .then(literal("show")
                         .then(argument("page", IntegerArgumentType.integer(1))
-                        .executes(context -> getAvailableLeaderboardsGUI(context.getSource(), IntegerArgumentType.getInteger(context, "page"))))));
+                        .executes(context -> getAvailableGeneralStatisticLeaderboardsGUI(context.getSource(), IntegerArgumentType.getInteger(context, "page"))))));
     }
 
-    public static int getAvailableLeaderboards(ServerCommandSource source, int page) {
-        int pageCount = Math.floorDiv(Registries.CUSTOM_STAT.size(), SHOWN_ITEMS_PER_PAGE) + 1;
-        int startItemIndex = page * SHOWN_ITEMS_PER_PAGE;
-
-        if(page >= pageCount) {
-            source.sendMessage(Text.literal("§4The list does not contain that many elements. Please use a smaller page."));
-        }
-
-        source.sendMessage(Text.literal("§6The following Statistics are collected and can be used for a leaderboard. (Page " + (page + 1) + "/" + pageCount + ")"));
-
-        for (Identifier identifier : Registries.CUSTOM_STAT.stream().skip(startItemIndex).limit(SHOWN_ITEMS_PER_PAGE).toList()) {
-            source.sendMessage(Text.literal("- " + identifier.getPath() + " (").append(Text.translatable(identifier.toTranslationKey("stat"))).append(Text.literal(")")));
-        }
-
-        return 0;
-    }
-
-    public static int getAvailableLeaderboardsGUI(ServerCommandSource source, int page) {
+    public static int getAvailableGeneralStatisticLeaderboardsGUI(ServerCommandSource source, int page) {
         int pageCount = Math.floorDiv(Registries.CUSTOM_STAT.size(), 54) + 1;
         int startItemIndex = (page > 0 ? page - 1 : 0) * 54;
 
@@ -89,7 +61,7 @@ public class AvailableLeaderboardsCommand {
                     } else {
                         gui.close();
 
-                        BookGui bookGui = new BookGui(source.getPlayer(), LeaderboardBookBuilder.buildWrittenBook(LeaderboardDataBuilder.buildLeaderboardData(source, correspondingStat), correspondingStat));
+                        BookGui bookGui = new BookGui(source.getPlayer(), LeaderboardBookBuilder.buildWrittenBookForGeneralStatistic(LeaderboardDataBuilder.buildLeaderboardDataGeneralStatistic(source, correspondingStat), correspondingStat));
                         bookGui.open();
                     }
                 }

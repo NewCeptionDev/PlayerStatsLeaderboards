@@ -1,7 +1,9 @@
 package dev.newception.playerStatsLeaderboards.service;
 
 import dev.newception.playerStatsLeaderboards.config.StatisticTranslation;
+import dev.newception.playerStatsLeaderboards.util.ItemStatsType;
 import dev.newception.playerStatsLeaderboards.util.PlayerStatValue;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -10,7 +12,9 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.stat.Stat;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod.MOD_CONFIG;
 
@@ -19,22 +23,43 @@ public class LeaderboardBookBuilder {
     private static final int LEADERBOARD_LINES_PER_PAGE = 10;
     private static final int LEADERBOARD_LINES_FIRST_PAGE = 8;
 
-    // TODO Use BookElementBuilder
-
-    public static ItemStack buildWrittenBook(List<PlayerStatValue> playerStatValues, Stat<Identifier> stat) {
-        ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
-        NbtCompound tags = new NbtCompound();
-        tags.putString("title", "Leaderboard");
-        tags.putString("author", "PlayerStatsLeaderboards");
-
+    public static ItemStack buildWrittenBookForGeneralStatistic(List<PlayerStatValue> playerStatValues, Stat<Identifier> stat) {
         NbtList bookContent = new NbtList();
+        List<String> pages = buildStringPages(playerStatValues, stat, stat.getValue().toTranslationKey("stat"));
+
+        for(String page : pages) {
+            bookContent.add(NbtString.of(page));
+        }
+
+        return buildWrittenBook(bookContent);
+    }
+
+    public static ItemStack buildWrittenBookForItemStatistic(Map<ItemStatsType, List<PlayerStatValue>> playerStatValues, Item item) {
+        NbtList bookContent = new NbtList();
+
+        for(ItemStatsType key : playerStatValues.keySet()) {
+            if(playerStatValues.get(key).stream().anyMatch(playerStatValue -> playerStatValue.statValue() > 0)) {
+                List<String> pages = buildStringPages(playerStatValues.get(key), key.toStatType().getOrCreateStat(item), "stat_type." + key.getIdentifier().replaceAll(":", "."));
+
+                for(String page : pages) {
+                    bookContent.add(NbtString.of(page));
+                }
+            }
+
+        }
+
+        return buildWrittenBook(bookContent);
+    }
+
+    private static <T> List<String> buildStringPages(List<PlayerStatValue> playerStatValues, Stat<T> stat, String translationIdentifier) {
+        List<String> pagesAsString = new ArrayList<>();
         int pages = getPagesNeeded(playerStatValues.size());
 
         for (int i = 0; i < pages; i++) {
             StringBuilder pageContentBuilder = new StringBuilder();
             int playersToList = LEADERBOARD_LINES_PER_PAGE;
             if (i == 0) {
-                pageContentBuilder.append("Leaderboard for ").append(getTranslationForStatistic(stat));
+                pageContentBuilder.append("Leaderboard for ").append(getTranslationForStatistic(translationIdentifier));
                 pageContentBuilder.append("\n");
                 pageContentBuilder.append("\n");
 
@@ -53,10 +78,19 @@ public class LeaderboardBookBuilder {
                 pageContentBuilder.append(")");
                 pageContentBuilder.append("\n");
             }
-            bookContent.add(NbtString.of(pageContentBuilder.toString()));
+            pagesAsString.add(pageContentBuilder.toString());
         }
 
-        tags.put("pages", bookContent);
+        return pagesAsString;
+    }
+
+    private static ItemStack buildWrittenBook(NbtList pages) {
+        ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
+        NbtCompound tags = new NbtCompound();
+        tags.putString("title", "Leaderboard");
+        tags.putString("author", "PlayerStatsLeaderboards");
+
+        tags.put("pages", pages);
         book.setNbt(tags);
 
         return book;
@@ -80,15 +114,15 @@ public class LeaderboardBookBuilder {
         return LEADERBOARD_LINES_FIRST_PAGE + (page - 1) * LEADERBOARD_LINES_PER_PAGE + positionOnPage + 1;
     }
 
-    private static String getTranslationForStatistic(Stat<Identifier> statistic) {
-        if(MOD_CONFIG.getCustomTranslation().containsKey(statistic.getValue().toTranslationKey("stat"))) {
-            return MOD_CONFIG.getCustomTranslation().get(statistic.getValue().toTranslationKey("stat"));
+    private static String getTranslationForStatistic(String identifier) {
+        if(MOD_CONFIG.getCustomTranslation().containsKey(identifier)) {
+            return MOD_CONFIG.getCustomTranslation().get(identifier);
         }
 
-        if(StatisticTranslation.getTRANSLATION().containsKey(statistic.getValue().toTranslationKey("stat"))) {
-            return StatisticTranslation.getTRANSLATION().get(statistic.getValue().toTranslationKey("stat"));
+        if(StatisticTranslation.getTRANSLATION().containsKey(identifier)) {
+            return StatisticTranslation.getTRANSLATION().get(identifier);
         }
 
-        return statistic.getValue().toShortTranslationKey();
+        return identifier;
     }
 }

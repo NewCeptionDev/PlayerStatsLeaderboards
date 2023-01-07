@@ -16,11 +16,14 @@ public class PlayerInformationCache {
 
     private String username;
 
-    private Map<Identifier, Integer> statCache;
+    private Map<Identifier, Integer> generalStatCache;
+
+    private Map<ItemStatsType, Map<Identifier, Integer>> itemStatCache;
 
     public PlayerInformationCache(UUID playerUUID) {
         this.playerUUID = playerUUID;
-        this.statCache = new HashMap<>();
+        this.generalStatCache = new HashMap<>();
+        itemStatCache = new HashMap<>();
     }
 
     public String getUsername() {
@@ -31,12 +34,24 @@ public class PlayerInformationCache {
         return username;
     }
 
-    public Integer getStat(Identifier requestedStatIdentifier, Path statsSavePath) {
-        if(!statCache.containsKey(requestedStatIdentifier)) {
-            statCache.put(requestedStatIdentifier, StatsFileReader.readStatForPlayer(playerUUID, requestedStatIdentifier.getPath(), statsSavePath));
+    public Integer getGeneralStat(Identifier requestedStatIdentifier, Path statsSavePath) {
+        if(!generalStatCache.containsKey(requestedStatIdentifier)) {
+            generalStatCache.put(requestedStatIdentifier, StatsFileReader.readGeneralStatForPlayer(playerUUID, requestedStatIdentifier.getNamespace() + ":" + requestedStatIdentifier.getPath(), statsSavePath));
         }
 
-        return statCache.get(requestedStatIdentifier);
+        return generalStatCache.get(requestedStatIdentifier);
+    }
+
+    public Integer getItemStat(ItemStatsType requestedType, Identifier relevantItem, Path statsSavePath) {
+        if(!itemStatCache.containsKey(requestedType)) {
+            itemStatCache.put(requestedType, new HashMap<>());
+        }
+
+        if(!itemStatCache.get(requestedType).containsKey(relevantItem)) {
+            itemStatCache.get(requestedType).put(relevantItem, StatsFileReader.readItemStatForPlayer(playerUUID, requestedType.getIdentifier(), relevantItem.getNamespace() + ":" + relevantItem.getPath(), statsSavePath));
+        }
+
+        return itemStatCache.get(requestedType).get(relevantItem);
     }
 
     public void findUsername() {
@@ -48,7 +63,8 @@ public class PlayerInformationCache {
     }
 
     public void resetStatsCache() {
-        this.statCache = new HashMap<>();
+        this.generalStatCache = new HashMap<>();
+        this.itemStatCache = new HashMap<>();
     }
 
     public void updateUsernameIfNecessary(String username) {
