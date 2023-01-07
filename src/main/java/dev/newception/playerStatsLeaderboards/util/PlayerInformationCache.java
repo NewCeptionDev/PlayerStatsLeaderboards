@@ -3,6 +3,7 @@ package dev.newception.playerStatsLeaderboards.util;
 import dev.newception.playerStatsLeaderboards.io.StatsFileReader;
 import dev.newception.playerStatsLeaderboards.io.UsernameAPI;
 import dev.newception.playerStatsLeaderboards.io.UsernameFileReader;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
 import java.nio.file.Path;
@@ -20,10 +21,13 @@ public class PlayerInformationCache {
 
     private Map<ItemStatsType, Map<Identifier, Integer>> itemStatCache;
 
+    private Map<MobStatsType, Map<EntityType, Integer>> mobStatCache;
+
     public PlayerInformationCache(UUID playerUUID) {
         this.playerUUID = playerUUID;
         this.generalStatCache = new HashMap<>();
-        itemStatCache = new HashMap<>();
+        this.itemStatCache = new HashMap<>();
+        this.mobStatCache = new HashMap<>();
     }
 
     public String getUsername() {
@@ -48,10 +52,22 @@ public class PlayerInformationCache {
         }
 
         if(!itemStatCache.get(requestedType).containsKey(relevantItem)) {
-            itemStatCache.get(requestedType).put(relevantItem, StatsFileReader.readItemStatForPlayer(playerUUID, requestedType.getIdentifier(), relevantItem.getNamespace() + ":" + relevantItem.getPath(), statsSavePath));
+            itemStatCache.get(requestedType).put(relevantItem, StatsFileReader.readNonGeneralStatForPlayer(playerUUID, requestedType.getIdentifier(), relevantItem.getNamespace() + ":" + relevantItem.getPath(), statsSavePath));
         }
 
         return itemStatCache.get(requestedType).get(relevantItem);
+    }
+
+    public Integer getMobStat(MobStatsType requestedType, EntityType entityType, Path statsSavePath) {
+        if(!mobStatCache.containsKey(requestedType)) {
+            mobStatCache.put(requestedType, new HashMap<>());
+        }
+
+        if(!mobStatCache.get(requestedType).containsKey(entityType)) {
+            mobStatCache.get(requestedType).put(entityType, StatsFileReader.readNonGeneralStatForPlayer(playerUUID, requestedType.getIdentifier(), "minecraft:" + entityType.getUntranslatedName(), statsSavePath));
+        }
+
+        return mobStatCache.get(requestedType).get(entityType);
     }
 
     public void findUsername() {
@@ -65,6 +81,7 @@ public class PlayerInformationCache {
     public void resetStatsCache() {
         this.generalStatCache = new HashMap<>();
         this.itemStatCache = new HashMap<>();
+        this.mobStatCache = new HashMap<>();
     }
 
     public void updateUsernameIfNecessary(String username) {

@@ -38,9 +38,9 @@ public class StatsFileReader {
         }
     }
 
-    public static Integer readItemStatForPlayer(UUID player, String statType, String item, Path statsPath) {
+    public static Integer readNonGeneralStatForPlayer(UUID player, String statType, String stat, Path statsPath) {
         try {
-            PlayerStatsLeaderboardsMod.LOGGER.info("Reading Stat File of Player " + player + " for ItemStat");
+            PlayerStatsLeaderboardsMod.LOGGER.info("Reading Stat File of Player " + player + " for " + statType);
             String statsContent = Files.readString(statsPath.resolve(player.toString() + ".json"));
             JsonObject jsonRoot = JsonParser.parseString(statsContent).getAsJsonObject();
 
@@ -50,9 +50,9 @@ public class StatsFileReader {
             }
 
             JsonObject statsForStatType = statsObject.getAsJsonObject(statType);
-            if(statsForStatType.has(item)) {
-                PlayerStatsLeaderboardsMod.LOGGER.info("Loaded ItemStat for Player " + player + " from File");
-                return statsForStatType.get(item).getAsInt();
+            if(statsForStatType.has(stat)) {
+                PlayerStatsLeaderboardsMod.LOGGER.info("Loaded " + statType + " Stat for Player " + player + " from File");
+                return statsForStatType.get(stat).getAsInt();
             }
             return 0;
         } catch (IOException e) {

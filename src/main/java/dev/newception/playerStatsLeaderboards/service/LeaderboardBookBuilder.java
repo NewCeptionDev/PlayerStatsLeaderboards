@@ -2,7 +2,9 @@ package dev.newception.playerStatsLeaderboards.service;
 
 import dev.newception.playerStatsLeaderboards.config.StatisticTranslation;
 import dev.newception.playerStatsLeaderboards.util.ItemStatsType;
+import dev.newception.playerStatsLeaderboards.util.MobStatsType;
 import dev.newception.playerStatsLeaderboards.util.PlayerStatValue;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -25,7 +27,7 @@ public class LeaderboardBookBuilder {
 
     public static ItemStack buildWrittenBookForGeneralStatistic(List<PlayerStatValue> playerStatValues, Stat<Identifier> stat) {
         NbtList bookContent = new NbtList();
-        List<String> pages = buildStringPages(playerStatValues, stat, stat.getValue().toTranslationKey("stat"));
+        List<String> pages = buildStringPages(playerStatValues, stat, stat.getValue().toTranslationKey("stat"), null);
 
         for(String page : pages) {
             bookContent.add(NbtString.of(page));
@@ -39,19 +41,34 @@ public class LeaderboardBookBuilder {
 
         for(ItemStatsType key : playerStatValues.keySet()) {
             if(playerStatValues.get(key).stream().anyMatch(playerStatValue -> playerStatValue.statValue() > 0)) {
-                List<String> pages = buildStringPages(playerStatValues.get(key), key.toStatType().getOrCreateStat(item), "stat_type." + key.getIdentifier().replaceAll(":", "."));
+                List<String> pages = buildStringPages(playerStatValues.get(key), key.toStatType().getOrCreateStat(item), "stat_type." + key.getIdentifier().replaceAll(":", "."), item.getName().getString());
 
                 for(String page : pages) {
                     bookContent.add(NbtString.of(page));
                 }
             }
-
         }
 
         return buildWrittenBook(bookContent);
     }
 
-    private static <T> List<String> buildStringPages(List<PlayerStatValue> playerStatValues, Stat<T> stat, String translationIdentifier) {
+    public static ItemStack buildWrittenBookForMobStatistic(Map<MobStatsType, List<PlayerStatValue>> playerStatValues, EntityType entityType) {
+        NbtList bookContent = new NbtList();
+
+        for(MobStatsType key : playerStatValues.keySet()) {
+            if(playerStatValues.get(key).stream().anyMatch(playerStatValue -> playerStatValue.statValue() > 0)) {
+                List<String> pages = buildStringPages(playerStatValues.get(key), key.toStatType().getOrCreateStat(entityType), "stat_type." + key.getIdentifier().replaceAll(":", "."), entityType.getName().getString());
+
+                for(String page : pages) {
+                    bookContent.add(NbtString.of(page));
+                }
+            }
+        }
+
+        return buildWrittenBook(bookContent);
+    }
+
+    private static <T> List<String> buildStringPages(List<PlayerStatValue> playerStatValues, Stat<T> stat, String translationIdentifier, String nameSuffix) {
         List<String> pagesAsString = new ArrayList<>();
         int pages = getPagesNeeded(playerStatValues.size());
 
@@ -60,6 +77,10 @@ public class LeaderboardBookBuilder {
             int playersToList = LEADERBOARD_LINES_PER_PAGE;
             if (i == 0) {
                 pageContentBuilder.append("Leaderboard for ").append(getTranslationForStatistic(translationIdentifier));
+                if(nameSuffix != null) {
+                    pageContentBuilder.append(" ").append(nameSuffix);
+                }
+
                 pageContentBuilder.append("\n");
                 pageContentBuilder.append("\n");
 
@@ -89,6 +110,10 @@ public class LeaderboardBookBuilder {
         NbtCompound tags = new NbtCompound();
         tags.putString("title", "Leaderboard");
         tags.putString("author", "PlayerStatsLeaderboards");
+
+        if(pages.isEmpty()) {
+            pages.add(NbtString.of("No comparable Statistics to show.\n\nNo Player has done any action that increases this statistic."));
+        }
 
         tags.put("pages", pages);
         book.setNbt(tags);

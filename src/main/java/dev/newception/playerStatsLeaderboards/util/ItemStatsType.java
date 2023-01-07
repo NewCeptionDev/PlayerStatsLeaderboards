@@ -43,19 +43,13 @@ public enum ItemStatsType {
     }
 
     public StatType<Item> toStatType() {
-        switch (this) {
-            case BROKEN:
-                return Stats.BROKEN;
-            case USED:
-                return Stats.USED;
-            case CRAFTED:
-                return Stats.CRAFTED;
-            case DROPPED:
-                return Stats.DROPPED;
-            case PICKED_UP:
-                return Stats.PICKED_UP;
-        }
+        return switch (this) {
+            case BROKEN -> Stats.BROKEN;
+            case USED -> Stats.USED;
+            case CRAFTED -> Stats.CRAFTED;
+            case DROPPED -> Stats.DROPPED;
+            case PICKED_UP -> Stats.PICKED_UP;
+        };
 
-        throw new IllegalArgumentException();
     }
 }

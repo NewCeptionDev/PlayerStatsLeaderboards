@@ -90,12 +90,17 @@ public class StatisticTranslation {
         translation.put("stat.minecraft.walk_one_cm", "Distance Walked");
         translation.put("stat.minecraft.walk_under_water_one_cm", "Distance Walked under Water");
 
+        // Item Stats Translations
         translation.put("stat_type.minecraft.broken", "Times Broken");
         translation.put("stat_type.minecraft.crafted", "Times Crafted");
         translation.put("stat_type.minecraft.dropped", "Times Dropped");
         translation.put("stat_type.minecraft.mined", "Times Mined");
         translation.put("stat_type.minecraft.picked_up", "Times Picked Up");
         translation.put("stat_type.minecraft.used", "Times Used");
+
+        //Mob Stats Translations
+        translation.put("stat_type.minecraft.killed", "Times Killed");
+        translation.put("stat_type.minecraft.killed_by", "Times Killed by");
 
         return translation;
     }
