@@ -25,13 +25,11 @@ public class LeaderboardSelectionCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("leaderboards")
-                .then(literal("show")
-                        .executes(context -> getAvailableGeneralStatisticLeaderboardsGUI(context.getSource(), 0))));
+                .executes(context -> getAvailableGeneralStatisticLeaderboardsGUI(context.getSource(), 0)));
 
         dispatcher.register(literal("leaderboards")
-                .then(literal("show")
-                        .then(argument("page", IntegerArgumentType.integer(1))
-                        .executes(context -> getAvailableGeneralStatisticLeaderboardsGUI(context.getSource(), IntegerArgumentType.getInteger(context, "page"))))));
+                .then(argument("page", IntegerArgumentType.integer(1))
+                        .executes(context -> getAvailableGeneralStatisticLeaderboardsGUI(context.getSource(), IntegerArgumentType.getInteger(context, "page")))));
     }
 
     public static int getAvailableGeneralStatisticLeaderboardsGUI(ServerCommandSource source, int page) {
@@ -45,7 +43,7 @@ public class LeaderboardSelectionCommand {
         source.sendMessage(Text.literal("Showing available Leaderboards Page " + (page > 0 ? page : 1) + "/" + pageCount).formatted(Formatting.GOLD));
 
         SimpleGui gui = new SimpleGuiBuilder(ScreenHandlerType.GENERIC_9X6, false).build(source.getPlayer());
-        gui.setTitle(Text.literal("Available Leaderboards Page " + (page > 0 ? page : 1)));
+        gui.setTitle(Text.literal("General Statistics Page " + (page > 0 ? page : 1)));
         gui.setLockPlayerInventory(true);
 
         for(int i = startItemIndex; i < Registries.CUSTOM_STAT.size() && (i - startItemIndex) < 54; i++) {

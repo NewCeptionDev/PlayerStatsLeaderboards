@@ -37,8 +37,8 @@ public class ShowSpecificLeaderboardCommand {
 
         dispatcher.register(literal("leaderboard")
                 .then(literal("mobs")
-                        .then(argument("mob", StringArgumentType.string())
-                                .executes(context -> showLeaderboardForMobStat(context.getSource(), StringArgumentType.getString(context, "mob"))))));
+                        .then(argument("mobName", StringArgumentType.string())
+                                .executes(context -> showLeaderboardForMobStat(context.getSource(), StringArgumentType.getString(context, "mobName"))))));
     }
 
     private static int showLeaderboardForGeneralStat(ServerCommandSource source, Identifier statIdentifier) {
@@ -50,7 +50,7 @@ public class ShowSpecificLeaderboardCommand {
         Stat<Identifier> stat = StatService.findStatForIdentifier(statIdentifier);
 
         if(stat == null) {
-            source.sendMessage(Text.literal("No Stat found for the given identifier.").formatted(Formatting.RED));
+            source.sendMessage(Text.literal("No Statistic found for the given identifier.").formatted(Formatting.RED));
             return -1;
         }
 

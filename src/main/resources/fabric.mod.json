@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "Player Stats Leaderboards",
-  "description": "This mod allows you to extract the minecraft statistics from every player and compare them via commands.",
+  "description": "This mod allows you to extract the minecraft statistics from every player and provide them ranked in a gui.",
   "authors": [
     "NewCeptionDev"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/newceptiondev",
+    "sources": "https://github.com/newceptiondev/playerstatsleaderboards"
   },
 
   "license": "CC0-1.0",
@@ -22,17 +22,11 @@
       "dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod"
     ]
   },
-  "mixins": [
-    "modid.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.14.11",
     "fabric-api": "*",
     "minecraft": "~1.19.3",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

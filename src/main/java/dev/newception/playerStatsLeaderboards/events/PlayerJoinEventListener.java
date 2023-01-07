@@ -1,7 +1,5 @@
 package dev.newception.playerStatsLeaderboards.events;
 
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -10,7 +8,7 @@ import static dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod.
 
 public class PlayerJoinEventListener {
 
-    public static void handlePlayerJoinEvent(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+    public static void handlePlayerJoinEvent(ServerPlayNetworkHandler handler) {
         ServerPlayerEntity player = handler.getPlayer();
 
         REGISTERED_PLAYERS.add(player.getUuid());

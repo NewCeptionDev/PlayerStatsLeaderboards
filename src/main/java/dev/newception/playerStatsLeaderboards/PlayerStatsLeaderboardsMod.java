@@ -52,7 +52,7 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> LeaderboardSelectionCommand.register(dispatcher));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ShowSpecificLeaderboardCommand.register(dispatcher));
 
-		ServerPlayConnectionEvents.JOIN.register(PlayerJoinEventListener::handlePlayerJoinEvent);
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PlayerJoinEventListener.handlePlayerJoinEvent(handler));
 
 		LOGGER.info("Successfully started PlayerStatsLeaderboards Mod!");
 	}

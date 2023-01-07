@@ -1,6 +1,5 @@
 package dev.newception.playerStatsLeaderboards.util;
 
-import net.minecraft.item.Item;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 

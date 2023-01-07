@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.stat.Stat;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -40,13 +41,7 @@ public class LeaderboardBookBuilder {
         NbtList bookContent = new NbtList();
 
         for(ItemStatsType key : playerStatValues.keySet()) {
-            if(playerStatValues.get(key).stream().anyMatch(playerStatValue -> playerStatValue.statValue() > 0)) {
-                List<String> pages = buildStringPages(playerStatValues.get(key), key.toStatType().getOrCreateStat(item), "stat_type." + key.getIdentifier().replaceAll(":", "."), item.getName().getString());
-
-                for(String page : pages) {
-                    bookContent.add(NbtString.of(page));
-                }
-            }
+            buildPagesFromData(bookContent, playerStatValues.get(key), key.toStatType().getOrCreateStat(item), key.getIdentifier(), item.getName());
         }
 
         return buildWrittenBook(bookContent);
@@ -56,16 +51,20 @@ public class LeaderboardBookBuilder {
         NbtList bookContent = new NbtList();
 
         for(MobStatsType key : playerStatValues.keySet()) {
-            if(playerStatValues.get(key).stream().anyMatch(playerStatValue -> playerStatValue.statValue() > 0)) {
-                List<String> pages = buildStringPages(playerStatValues.get(key), key.toStatType().getOrCreateStat(entityType), "stat_type." + key.getIdentifier().replaceAll(":", "."), entityType.getName().getString());
-
-                for(String page : pages) {
-                    bookContent.add(NbtString.of(page));
-                }
-            }
+            buildPagesFromData(bookContent, playerStatValues.get(key), key.toStatType().getOrCreateStat(entityType), key.getIdentifier(), entityType.getName());
         }
 
         return buildWrittenBook(bookContent);
+    }
+
+    private static <T> void buildPagesFromData(NbtList bookContent, List<PlayerStatValue> playerStatValues, Stat<T> stat, String identifier, Text name) {
+        if(playerStatValues.stream().anyMatch(playerStatValue -> playerStatValue.statValue() > 0)) {
+            List<String> pages = buildStringPages(playerStatValues, stat, "stat_type." + identifier.replaceAll(":", "."), name.getString());
+
+            for(String page : pages) {
+                bookContent.add(NbtString.of(page));
+            }
+        }
     }
 
     private static <T> List<String> buildStringPages(List<PlayerStatValue> playerStatValues, Stat<T> stat, String translationIdentifier, String nameSuffix) {

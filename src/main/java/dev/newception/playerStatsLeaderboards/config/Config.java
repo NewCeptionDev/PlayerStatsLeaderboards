@@ -1,18 +1,9 @@
 package dev.newception.playerStatsLeaderboards.config;
 
-import com.google.gson.*;
-import dev.newception.playerStatsLeaderboards.PlayerStatsLeaderboardsMod;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -72,7 +63,7 @@ public class Config {
 
     private Optional<Identifier> getIdentifierForString(String s, boolean isStatIdentifier) {
         String namespace = null;
-        String path = null;
+        String path;
 
         if(s.contains(":")) {
             String[] split = s.split(":");
