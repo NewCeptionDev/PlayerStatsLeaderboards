@@ -6,6 +6,7 @@ import net.minecraft.stat.Stats;
 
 public enum ItemStatsType {
 
+    MINED("minecraft:mined"),
     BROKEN("minecraft:broken"),
     CRAFTED("minecraft:crafted"),
     USED("minecraft:used"),
@@ -23,6 +24,9 @@ public enum ItemStatsType {
     }
 
     public static ItemStatsType fromStatType(StatType type) {
+        if(type == Stats.MINED) {
+            return MINED;
+        }
         if(type == Stats.BROKEN) {
             return BROKEN;
         }
@@ -42,14 +46,14 @@ public enum ItemStatsType {
         return null;
     }
 
-    public StatType<Item> toStatType() {
+    public StatType toStatType() {
         return switch (this) {
+            case MINED -> Stats.MINED;
             case BROKEN -> Stats.BROKEN;
             case USED -> Stats.USED;
             case CRAFTED -> Stats.CRAFTED;
             case DROPPED -> Stats.DROPPED;
             case PICKED_UP -> Stats.PICKED_UP;
         };
-
     }
 }

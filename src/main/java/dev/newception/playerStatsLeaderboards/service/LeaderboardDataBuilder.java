@@ -4,6 +4,8 @@ import dev.newception.playerStatsLeaderboards.util.ItemStatsType;
 import dev.newception.playerStatsLeaderboards.util.MobStatsType;
 import dev.newception.playerStatsLeaderboards.util.PlayerInformationCache;
 import dev.newception.playerStatsLeaderboards.util.PlayerStatValue;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -55,7 +57,11 @@ public class LeaderboardDataBuilder {
     public static Map<ItemStatsType, List<PlayerStatValue>> buildLeaderboardDataItemStatistic(ServerCommandSource source, Item item) {
         Map<ItemStatsType, List<PlayerStatValue>> playerStatValuesForAllItemStatistics = new HashMap<>();
 
-//        playerStatValuesForAllItemStatistics.put("MINED", getLeaderboardDataForItemStatistic(source, Stats.MINED, item));
+        Block correspondingBlock = Registries.BLOCK.get(Registries.ITEM.getId(item));
+        if(!correspondingBlock.equals(Blocks.AIR)) {
+            playerStatValuesForAllItemStatistics.put(ItemStatsType.MINED, getLeaderboardDataForItemStatistic(source, Stats.MINED, correspondingBlock));
+        }
+
         playerStatValuesForAllItemStatistics.put(ItemStatsType.BROKEN, getLeaderboardDataForItemStatistic(source, Stats.BROKEN, item));
         playerStatValuesForAllItemStatistics.put(ItemStatsType.CRAFTED, getLeaderboardDataForItemStatistic(source, Stats.CRAFTED, item));
         playerStatValuesForAllItemStatistics.put(ItemStatsType.USED, getLeaderboardDataForItemStatistic(source, Stats.USED, item));
@@ -74,24 +80,28 @@ public class LeaderboardDataBuilder {
         return playerStatValuesForAllMobStatistics;
     }
 
-    private static List<PlayerStatValue> getLeaderboardDataForItemStatistic(ServerCommandSource source, StatType<Item> statType, Item item) {
+    private static <T> List<PlayerStatValue> getLeaderboardDataForItemStatistic(ServerCommandSource source, StatType<T> statType, T itemStatisticElement) {
         List<PlayerStatValue> playerStatValueList = new ArrayList<>();
 
         REGISTERED_PLAYERS.forEach(playerUUID -> {
             String playerName;
-            Integer statValue;
+            Integer statValue = null;
             if (source.getServer().getPlayerManager().getPlayer(playerUUID) != null) {
                 ServerPlayerEntity player = source.getServer().getPlayerManager().getPlayer(playerUUID);
 
                 playerName = player.getDisplayName().getString();
-                statValue = player.getStatHandler().getStat(statType, item);
+                statValue = player.getStatHandler().getStat(statType, itemStatisticElement);
             } else {
                 if(!PLAYER_INFORMATION_CACHE.containsKey(playerUUID)) {
                     PLAYER_INFORMATION_CACHE.put(playerUUID, new PlayerInformationCache(playerUUID));
                 }
 
                 playerName = PLAYER_INFORMATION_CACHE.get(playerUUID).getUsername();
-                statValue = PLAYER_INFORMATION_CACHE.get(playerUUID).getItemStat(ItemStatsType.fromStatType(statType), Registries.ITEM.getId(item), source.getServer().getSavePath(WorldSavePath.STATS));
+                if(itemStatisticElement instanceof Item) {
+                    statValue = PLAYER_INFORMATION_CACHE.get(playerUUID).getItemStat(ItemStatsType.fromStatType(statType), Registries.ITEM.getId((Item) itemStatisticElement), source.getServer().getSavePath(WorldSavePath.STATS));
+                } else if(itemStatisticElement instanceof Block) {
+                    statValue = PLAYER_INFORMATION_CACHE.get(playerUUID).getItemStat(ItemStatsType.fromStatType(statType), Registries.BLOCK.getId((Block) itemStatisticElement), source.getServer().getSavePath(WorldSavePath.STATS));
+                }
             }
 
             if(playerName != null && statValue != null) {
