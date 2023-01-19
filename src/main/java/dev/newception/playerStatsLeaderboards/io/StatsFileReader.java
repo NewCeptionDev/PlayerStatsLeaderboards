@@ -19,7 +19,7 @@ public class StatsFileReader {
 
     public static Integer readGeneralStatForPlayer(UUID player, String stat, Path statsPath) {
         try {
-            PlayerStatsLeaderboardsMod.LOGGER.info("Reading Stat File of Player " + player + " for GeneralStat");
+            PlayerStatsLeaderboardsMod.LOGGER.debug("Reading Stat File of Player " + player + " for GeneralStat");
             String statsContent = Files.readString(statsPath.resolve(player.toString() + ".json"));
             JsonObject jsonRoot = JsonParser.parseString(statsContent).getAsJsonObject();
 
@@ -27,7 +27,7 @@ public class StatsFileReader {
             JsonObject customStats = statsObject.getAsJsonObject("minecraft:custom");
 
             if(customStats.has(stat)) {
-                PlayerStatsLeaderboardsMod.LOGGER.info("Loaded GeneralStat for Player " + player + " from File");
+                PlayerStatsLeaderboardsMod.LOGGER.debug("Loaded GeneralStat for Player " + player + " from File");
                 return customStats.get(stat).getAsInt();
             }
             return 0;
@@ -40,7 +40,7 @@ public class StatsFileReader {
 
     public static Integer readNonGeneralStatForPlayer(UUID player, String statType, String stat, Path statsPath) {
         try {
-            PlayerStatsLeaderboardsMod.LOGGER.info("Reading Stat File of Player " + player + " for " + statType);
+            PlayerStatsLeaderboardsMod.LOGGER.debug("Reading Stat File of Player " + player + " for " + statType);
             String statsContent = Files.readString(statsPath.resolve(player.toString() + ".json"));
             JsonObject jsonRoot = JsonParser.parseString(statsContent).getAsJsonObject();
 
@@ -51,7 +51,7 @@ public class StatsFileReader {
 
             JsonObject statsForStatType = statsObject.getAsJsonObject(statType);
             if(statsForStatType.has(stat)) {
-                PlayerStatsLeaderboardsMod.LOGGER.info("Loaded " + statType + " Stat for Player " + player + " from File");
+                PlayerStatsLeaderboardsMod.LOGGER.debug("Loaded " + statType + " Stat for Player " + player + " from File");
                 return statsForStatType.get(stat).getAsInt();
             }
             return 0;

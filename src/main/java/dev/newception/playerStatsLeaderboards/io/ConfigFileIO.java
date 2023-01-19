@@ -24,7 +24,7 @@ public class ConfigFileIO {
             Path dirPath = Paths.get(CONFIG_PATH);
             if (!Files.exists(dirPath)) {
                 Files.createDirectory(dirPath);
-                PlayerStatsLeaderboardsMod.LOGGER.info("Created PlayerModsLeaderboards Mod folder");
+                PlayerStatsLeaderboardsMod.LOGGER.debug("Created PlayerModsLeaderboards Mod folder");
             }
 
             Writer writer = new FileWriter(CONFIG_PATH + "/" + "config.json");
@@ -48,7 +48,7 @@ public class ConfigFileIO {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(toSerialize, writer);
             writer.close();
-            PlayerStatsLeaderboardsMod.LOGGER.info("Persisted mod config");
+            PlayerStatsLeaderboardsMod.LOGGER.debug("Persisted mod config");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,14 +58,14 @@ public class ConfigFileIO {
         File modConfigDirectory = new File(CONFIG_PATH);
 
         if(!modConfigDirectory.exists() || !modConfigDirectory.isDirectory()) {
-            PlayerStatsLeaderboardsMod.LOGGER.info("PlayerStatsLeaderboards mod folder does not exist yet");
+            PlayerStatsLeaderboardsMod.LOGGER.debug("PlayerStatsLeaderboards mod folder does not exist yet");
             return null;
         }
 
         File configFile = new File(CONFIG_PATH + "/" + "config.json");
 
         if(!configFile.exists() || !configFile.isFile()) {
-            PlayerStatsLeaderboardsMod.LOGGER.info("PlayerStatsLeaderboards config file does not exist yet");
+            PlayerStatsLeaderboardsMod.LOGGER.debug("PlayerStatsLeaderboards config file does not exist yet");
             return null;
         }
 

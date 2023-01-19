@@ -41,7 +41,7 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 
 		if(readConfig != null) {
 			MOD_CONFIG = readConfig;
-			LOGGER.info("Successfully read existing config file");
+			LOGGER.debug("Successfully read existing config file");
 		} else {
 			MOD_CONFIG = new DefaultConfig();
 			ConfigFileIO.persistConfig(MOD_CONFIG);
@@ -54,6 +54,6 @@ public class PlayerStatsLeaderboardsMod implements ModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PlayerJoinEventListener.handlePlayerJoinEvent(handler));
 
-		LOGGER.info("Successfully started PlayerStatsLeaderboards Mod!");
+		LOGGER.info("[PlayerStatsLeaderboards] Successfully started!");
 	}
 }

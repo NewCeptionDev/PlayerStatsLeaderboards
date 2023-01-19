@@ -1,7 +1,6 @@
 package dev.newception.playerStatsLeaderboards.util;
 
 import dev.newception.playerStatsLeaderboards.io.StatsFileReader;
-import dev.newception.playerStatsLeaderboards.io.UsernameAPI;
 import dev.newception.playerStatsLeaderboards.io.UsernameFileReader;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
@@ -74,7 +73,7 @@ public class PlayerInformationCache {
         username = UsernameFileReader.readDisplayNameOfPlayer(playerUUID);
 
         if(username == null) {
-            username = UsernameAPI.getUsernameForUUID(playerUUID);
+            username = "Unknown User";
         }
     }
 
